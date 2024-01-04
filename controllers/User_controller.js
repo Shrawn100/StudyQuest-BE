@@ -91,17 +91,23 @@ exports.googleSignIn = [
 
     const { email, name } = req.body;
 
-    const user = await User.findOne({ email });
+    //Initialise variables
+    let dataToSign;
+    let newUser;
+
+    const user = await User.findOne({ username: email });
 
     if (!user) {
-      const newUser = new User({
-        email,
+      newUser = new User({
+        username: email,
         name,
       });
       await newUser.save();
-    }
 
-    const dataToSign = user ? { user } : { newUser };
+      dataToSign = { newUser };
+    } else {
+      dataToSign = { user };
+    }
 
     jwt.sign(
       dataToSign,
@@ -112,7 +118,12 @@ exports.googleSignIn = [
           console.error("JWT Signing Error:", err);
           return res.status(222).json({ message: "Internal Server Error" });
         }
-        res.json({ token, user: user || newUser });
+        console.log(token);
+        if (newUser) {
+          res.json({ token, user: newUser });
+        } else {
+          res.json({ token, user: user });
+        }
       }
     );
   }),

@@ -4,8 +4,6 @@ const userSchema = new mongoose.Schema({
   username: { type: String, unique: true },
   name: { type: String, required: true },
   password: { type: String },
-  email: { type: String },
-
   history: [{ type: mongoose.Schema.Types.ObjectId, ref: "StudySession" }],
   /*
   I would still need to include things such as the streaks,
